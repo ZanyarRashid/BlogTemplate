@@ -1,12 +1,16 @@
 const path = require('path');
 const { RuntimeGlobals } = require('webpack');
+const TerserPlugin = require('terser-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
     entry: './src/index.js',
     output: {
-        filename: 'bundle.js',
+        filename: 'bundle.[contenthash].js',
         path: path.resolve(__dirname, './dist'),
-        publicPath: 'dist/'
+        publicPath: ''
     },
     mode: 'none',
     module: {
@@ -27,13 +31,13 @@ module.exports = {
          {
             test: /\.css$/,
             use: [
-                'style-loader', 'css-loader'
+                MiniCssExtractPlugin.loader, 'css-loader'
             ]
          },
          {
             test: /\.scss$/,
             use: [
-                'style-loader', 'css-loader', 'sass-loader'
+                MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader'
             ]
          },
          {
@@ -45,7 +49,26 @@ module.exports = {
                     presets: [ '@babel/env' ]
                 }
             }
+         },
+         {
+            test: /\.hbs$/,
+            use: [
+                'handlebars-loader'
+            ]
          }
         ],
       },
+      plugins: [
+        new TerserPlugin(),
+        new MiniCssExtractPlugin({
+            filename: 'style.[contenthash].css',
+        }),
+        new CleanWebpackPlugin(),
+        new HtmlWebpackPlugin({
+            title: 'Hello World!',
+            template: 'src/index.hbs',
+            filename: 'index.html',
+            description: 'This is a blog template'
+        }),
+      ]
 };
