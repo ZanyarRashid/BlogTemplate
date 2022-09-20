@@ -4,13 +4,22 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-    entry: './src/index.js',
+    entry: {
+        'hello-world': './src/hello-world.js',
+        'mountain': './src/mountain.js'
+    },
     output: {
-        filename: 'bundle.[contenthash].js',
+        filename: '[name].[contenthash].js',
         path: path.resolve(__dirname, './dist'),
         publicPath: ''
     },
     mode: 'production',
+    optimization: {
+        splitChunks: {
+            chunks: 'all',
+            minSize: 3000
+        }
+    },
     module: {
         rules: [
          {
@@ -58,14 +67,24 @@ module.exports = {
       },
       plugins: [
         new MiniCssExtractPlugin({
-            filename: 'style.[contenthash].css',
+            filename: '[name].[contenthash].css',
         }),
         new CleanWebpackPlugin(),
         new HtmlWebpackPlugin({
+            filename: 'hello-world.html',
+            chunks: ['hello-world'],
             title: 'Hello World!',
-            template: 'src/index.hbs',
-            filename: 'index.html',
-            description: 'This is a blog template'
+            template: 'src/page-template.hbs',
+            description: 'Hello world!',
+            minify: false
+        }),
+        new HtmlWebpackPlugin({
+            filename: 'mountain.html',
+            chunks: ['mountain'],
+            title: 'Mountain image',
+            template: 'src/page-template.hbs',
+            description: 'This is a mountain',
+            minify: false
         }),
       ]
 };
